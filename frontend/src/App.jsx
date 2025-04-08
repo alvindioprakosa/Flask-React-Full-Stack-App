@@ -6,10 +6,9 @@ import "./App.css";
 function App() {
   const [contacts, setContacts] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [currentContact, setCurrentContact] = useState({});
+  const [currentContact, setCurrentContact] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  // Fetch contacts when the component mounts
   useEffect(() => {
     fetchContacts();
   }, []);
@@ -19,7 +18,7 @@ function App() {
     try {
       const response = await fetch("http://127.0.0.1:5000/contacts");
       const data = await response.json();
-      setContacts(data.contacts);
+      setContacts(data.contacts || []);
     } catch (error) {
       alert("Failed to fetch contacts");
     } finally {
@@ -27,25 +26,17 @@ function App() {
     }
   };
 
-  // Close modal
-  const closeModal = () => {
-    setIsModalOpen(false);
-    setCurrentContact({});
-  };
-
-  // Open Create Modal
-  const openCreateModal = () => {
-    if (!isModalOpen) setIsModalOpen(true);
-  };
-
-  // Open Edit Modal
-  const openEditModal = (contact) => {
+  const openModal = (contact = null) => {
     if (isModalOpen) return;
     setCurrentContact(contact);
     setIsModalOpen(true);
   };
 
-  // Callback after creating or updating a contact
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setCurrentContact(null);
+  };
+
   const onUpdate = () => {
     closeModal();
     fetchContacts();
@@ -55,12 +46,13 @@ function App() {
     <>
       <ContactList
         contacts={contacts}
-        updateContact={openEditModal}
+        updateContact={openModal}
         updateCallback={onUpdate}
       />
-      <button onClick={openCreateModal} disabled={isModalOpen || loading}>
+      <button onClick={() => openModal()} disabled={isModalOpen || loading}>
         Create New Contact
       </button>
+
       {isModalOpen && (
         <div className="modal">
           <div className="modal-content">
