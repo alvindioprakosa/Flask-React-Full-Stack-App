@@ -10,17 +10,16 @@ const ContactList = ({ contacts, updateContact, updateCallback }) => {
 
     setLoading(true);
     try {
-      const options = {
+      const response = await fetch(`http://127.0.0.1:5000/delete_contact/${id}`, {
         method: "DELETE",
-      };
-      const response = await fetch(`http://127.0.0.1:5000/delete_contact/${id}`, options);
-      
+      });
+
       if (response.status === 200) {
         updateCallback();
       } else {
         setError("Failed to delete the contact. Please try again.");
       }
-    } catch (error) {
+    } catch (err) {
       setError("An error occurred while deleting the contact.");
     } finally {
       setLoading(false);
@@ -29,8 +28,7 @@ const ContactList = ({ contacts, updateContact, updateCallback }) => {
 
   return (
     <div>
-      <h2>Contacts</h2>
-      {error && <div style={{ color: "red" }}>{error}</div>} {/* Error message */}
+      {error && <div className="error">{error}</div>}
       <table>
         <thead>
           <tr>
