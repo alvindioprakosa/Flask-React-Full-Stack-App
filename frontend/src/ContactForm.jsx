@@ -9,7 +9,6 @@ const ContactForm = ({ existingContact = {}, updateCallback }) => {
 
   const updating = Object.entries(existingContact).length !== 0;
 
-  // Basic Validation
   const validateForm = () => {
     if (!firstName || !lastName || !email) {
       setError("All fields are required");
@@ -26,22 +25,14 @@ const ContactForm = ({ existingContact = {}, updateCallback }) => {
 
   const onSubmit = async (e) => {
     e.preventDefault();
-    if (!validateForm()) return; // Stop if validation fails
+    if (!validateForm()) return;
 
     setLoading(true);
-    const data = {
-      firstName,
-      lastName,
-      email,
-    };
-    const url =
-      "http://127.0.0.1:5000/" +
-      (updating ? `update_contact/${existingContact.id}` : "create_contact");
+    const data = { firstName, lastName, email };
+    const url = `http://127.0.0.1:5000/${updating ? `update_contact/${existingContact.id}` : "create_contact"}`;
     const options = {
       method: updating ? "PATCH" : "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
     };
     try {
@@ -88,9 +79,7 @@ const ContactForm = ({ existingContact = {}, updateCallback }) => {
           onChange={(e) => setEmail(e.target.value)}
         />
       </div>
-
-      {error && <div style={{ color: "red" }}>{error}</div>} {/* Error message */}
-      
+      {error && <div className="error">{error}</div>}
       <button type="submit" disabled={loading}>
         {loading ? "Submitting..." : updating ? "Update" : "Create"}
       </button>
