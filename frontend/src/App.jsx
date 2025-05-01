@@ -8,6 +8,7 @@ function App() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentContact, setCurrentContact] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     fetchContacts();
@@ -19,8 +20,9 @@ function App() {
       const response = await fetch("http://127.0.0.1:5000/contacts");
       const data = await response.json();
       setContacts(data.contacts || []);
-    } catch (error) {
-      alert("Failed to fetch contacts");
+      setError("");
+    } catch (err) {
+      setError("Failed to fetch contacts.");
     } finally {
       setLoading(false);
     }
@@ -44,19 +46,23 @@ function App() {
 
   return (
     <>
-      <ContactList
-        contacts={contacts}
-        updateContact={openModal}
-        updateCallback={onUpdate}
-      />
+      <h1>Contact Manager</h1>
+      {error && <p className="error">{error}</p>}
+      {loading ? <p>Loading contacts...</p> : (
+        <ContactList
+          contacts={contacts}
+          updateContact={openModal}
+          updateCallback={onUpdate}
+        />
+      )}
       <button onClick={() => openModal()} disabled={isModalOpen || loading}>
         Create New Contact
       </button>
 
       {isModalOpen && (
-        <div className="modal">
+        <div className="modal" role="dialog" tabIndex={-1}>
           <div className="modal-content">
-            <span className="close" onClick={closeModal}>
+            <span className="close" onClick={closeModal} role="button" tabIndex={0}>
               &times;
             </span>
             <ContactForm
